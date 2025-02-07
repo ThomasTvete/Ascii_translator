@@ -5,8 +5,13 @@ function singleValueConvert(fromFormat, value, toFormat) {
     return null
 }
 
+function convertFriendly(string){
+    // nødvendig slik at sliceValues og singleValueConvert skal funke
+    return newStr = string.toLowerCase().replace(/\s+/g, '');
+}
+
 function stringConvert(fromFormat, string, toFormat){
-    let singleValues = []; // hvor jeg stapper inn alle enkelt-symboler/verdier i en array
+    let singleValues = []; // hvor jeg stapper inn alle enkelt-symboler/verdier
 
     switch (fromFormat){
         case 'ascii_char_dic':
@@ -16,13 +21,16 @@ function stringConvert(fromFormat, string, toFormat){
             }
             break;
         case 'ascii_bin_dic':
+            string = convertFriendly(string);
+            console.log(string)
             let binSlices = sliceValues(string, 8);
             for(let slice of binSlices){
                 singleValues.push(singleValueConvert(fromFormat, slice, toFormat))
             }
             break;
         case 'ascii_hex_dic':
-            string = string.toLowerCase(); // slik at det ikke gjør noe om man skriver/paster inn store bokstaver
+            string = convertFriendly(string);
+            console.log(string)
             let hexSlices = sliceValues(string, 2);
             for(let slice of hexSlices){
                 singleValues.push(singleValueConvert(fromFormat, slice, toFormat))
@@ -65,10 +73,10 @@ function sliceValues(string, size){
 function inputValidation(input){
     switch (input.id){
         case 'ascii_bin_dic':
-            input.value = input.value.replace(/[^01]/g, '');
+            input.value = input.value.replace(/[^01\s]/g, '');
             break;
         case 'ascii_hex_dic':
-            input.value = input.value.replace(/[^0-9a-fA-F]/g, '');
+            input.value = input.value.replace(/[^0-9a-fA-F\s]/g, '');
             break;
         default:
             break;
@@ -83,8 +91,28 @@ function updateInputs(fromFormat, string){
         let id = format.subDictionary;
         let key = format.key;
         if(id !== fromFormat){
-            console.log('halla')
             document.getElementById(id).value = stringConvert(fromFormat, string, key);
         }
     })
 }
+
+function showDemo(input) {
+    console.log('yoo??')
+    if(input == ''){
+        console.log('inbutt')
+        loadDemo();
+        document.getElementById('demoInput').focus();
+        return;
+    }
+    let dec = parseInt(singleValueConvert('ascii_char_dic', input, 'dec').replace(/^0+/, ''));
+    formats.forEach(format => {
+        if(format.system){
+            id = `${format.key}Demo`;
+            console.log(`${format.key}Demo`)
+            console.log('balla')
+            document.getElementById(id).innerHTML = demoCalc(format.key, dec, input)
+        }
+    })
+    document.getElementById('decDemo').innerHTML =`<h3>${dec}</h3>`
+    }
+

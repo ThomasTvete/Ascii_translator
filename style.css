@@ -30,6 +30,7 @@ input {
     border: none;
     outline: 5px;
     border-radius: 10px;
+    padding-top: 50%;
 }
 
 input:focus,
@@ -47,6 +48,7 @@ textarea:focus {
     background-color: var(--base);
     height: 100%;
     width: 100%;
+
 }
 
 .header-container {
@@ -75,6 +77,7 @@ textarea:focus {
 .input-wrapper textarea  {
     font-family: "comfortaa";
     font-size: 1.5em;
+    margin-top: 20px;
     padding: 10px;
     animation: shadow_fade_out 2s;
     box-shadow: 0 10px 40px rgba(249, 226, 175, 0.4),
@@ -103,4 +106,111 @@ textarea:focus {
 .input-wrapper textarea {
     height: 15vh;
     width: 20vw;
+}
+
+.boldL{
+    font: bolder;
+    font-size: 2em;
+}
+
+#navbar {
+    background-color: #1e1e2e;
+    color: #cba6f7;
+
+}
+
+.nav {
+    height: 3.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navLogo {
+    font-size: 1.5rem;
+    margin: auto 1rem;
+}
+
+.navMenu ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navMenu ul li {
+    list-style: none;
+}
+
+.navMenu ul li a {
+    text-decoration: none;
+    color: #cba6f7;
+    padding: 1rem;
+    display: block;
+}
+
+.navMenu li:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.navHamburger {
+    width: 1.875rem;
+    height: 1.313rem;
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+}
+
+.navHamLine {
+    height: 0.188rem;
+    width: 100%;
+    background-color: #1e1e2e;
+    border-radius: 0.625rem;
+    transition: all ease-in-out 0.2s;
+}
+
+@media screen and (max-width: 550px) {
+    .navHamburger {
+        display: flex;
+
+    }
+    .navMenu {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.2);
+        top: -12rem;
+        width: 100%;
+        transform: all ease-in-out 0.4s;
+    }
+    .nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .navMenu ul {
+        flex-direction: column;
+        width: 100%;
+        padding: 3rem 0 0.6rem;
+    }
+    .navMenu ul li {
+        text-align: center;
+    }
+    .navMenu {
+        z-index: -1;
+    }
+    .navMenu.active {
+        top: 0;
+    }
+    .navHamburger.active :nth-child(1) {
+        transform: rotate(45deg) translate(0.45rem, 0.1875rem);
+    }
+    .navHamburger.active :nth-child(2) {
+        opacity: 0;
+    }
+    .navHamburger.active :nth-child(3) {
+        transform: rotate(-45deg) translate(0.45rem, -0.1875rem);
+    }
 }
