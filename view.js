@@ -5,7 +5,7 @@ function loadNav() {
         let name = page.name;
         let id = page.id;
         liHtml += /*HTML*/ `
-        <li class="navMenuLink"><a onclick="updateView(id)" id="${id}" href="#${name}">${name}</a></li>
+        <li class="navMenuLink"><a onclick="updatePage(id)" id="${id}" href="#${name}">${name}</a></li>
         `;
     });
 
@@ -111,6 +111,17 @@ function loadDemo() {
 function loadDecoder() {
     document.getElementById("app").innerHTML = /*HTML*/ `
     <div class="header-container">
+        <h1>Tekstkryptering</h1>
+    </div>
+    <div class="input-container">
+        <div class="input-wrapper">
+            <h3>Skiv teksten du vil kryptere:</h3>
+            <textarea onchange="updateEncoder(this.id, value)" id="encodeInput" placeholder="Skriv her" value=""></textarea>
+        </div>
+        <div class="input-wrapper">
+            <h3>Skiv teksten du vil dekryptere:</h3>
+            <textarea onchange="updateEncoder(this.id, value)" id="decodeInput" placeholder="Skriv her" value=""></textarea>
+        </div>
     </div>
     `;
 }
@@ -120,8 +131,8 @@ function loadView() {
     loadNav();
 }
 
-function updateView(view) {
-    switch (view) {
+function updatePage(page) {
+    switch (page) {
         case "translator":
             loadMain();
             break;
