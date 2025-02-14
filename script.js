@@ -141,12 +141,12 @@ function encodeText(text, seed){
 
         // flytter krypterte tegn over til en ikke-kontroll-kode ascii-verdi
         // etter å ha lagret posisjonen i stringen og hvor mye den flyttes med
-        if(validAscii(codeCharVal) || codeCharVal == shiftMarker){
+        if(nonValidAscii(codeCharVal) || (codeCharVal === shiftMarker)){
             let shift = randomShiftAscii(rng);
             // shiftInfo.push(i); unødvendig med markør
             // legg til markør før den skiftede verdien
             encodedText.push(decConvert(shiftMarker));
-            console.log('SKIFT')
+            console.log('SKIFT ' + shift)
             codeCharVal += shift; 
         }
         console.log('masket ' + codeCharVal)
@@ -167,15 +167,20 @@ function encodeText(text, seed){
     return encodedOutput;
 }
 
-function validAscii(dec){
-    return (dec < 32) || (dec >= 127 && dec <= 159)
+function nonValidAscii(dec){
+    console.log('sjekk tall ' + dec)
+    return (dec < 32) || (dec >= 127 && dec <= 159) || (dec >= 256)
 }
 
 function randomMarker(rng){
+    // marker kan ikke være over 126,
+    // i tilfelle et maskert tegn overlapper
+    // med en marker på 200+ så vil randomShift
+    // fucke opp alt
     let marker;
     do{
         marker = randomAscii(rng)
-    } while(validAscii(marker))
+    } while((marker < 32) || (marker > 126))
     return marker;
 }
 
@@ -257,7 +262,7 @@ function keyGeneration(){
         let ranDec = 0;
         do{
             ranDec = randomAscii(Math.random);
-        }while(validAscii(ranDec));
+        }while(nonValidAscii(ranDec));
         key.push(singleValueConvert('ascii_dec_dic', ranDec.toString().padStart(3, '0'), 'char'))
     }
     $('encodeKey').value = key.join('');
