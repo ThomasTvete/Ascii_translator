@@ -11,4 +11,7 @@ const formats = [{subDictionary: 'ascii_char_dic', key: 'char', name: 'Tekst'},
                 {subDictionary: 'ascii_bin_dic', key: 'bin', name: 'Binært', system: "totall"},
                 {subDictionary: 'ascii_hex_dic', key: 'hex', name: 'Heksadesimalt', system:"sekstentall"}];
 
-const pages = [{name:"Oversetter", id:"translator"}, {name: "Forklaring", id: "demo"}, {name: "Kryptering", id: "decoder"}];
+const pages = [{name:"Oversetter", id:"translator"}, 
+                {name: "Forklaring", id: "demo"}, 
+                {name: "Kryptering", id: "encode"}, 
+                {name: "Dekryptering", id: "decode"}];

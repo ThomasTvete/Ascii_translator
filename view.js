@@ -1,3 +1,5 @@
+function $(x) {return document.getElementById(x);} // bare liten snarvei
+
 function loadNav() {
     let liHtml = "";
 
@@ -9,7 +11,7 @@ function loadNav() {
         `;
     });
 
-    document.getElementById("navbar").innerHTML = /*HTML*/ `
+    $("navbar").innerHTML = /*HTML*/ `
     <nav class="nav">
         <div class="navLogo">Ascii-verktøy</div>
         <a href="#" class="navHamburger">
@@ -65,7 +67,7 @@ function loadMain() {
         </div>
         `;
     });
-    document.getElementById("app").innerHTML = /*HTML*/ `
+    $('app').innerHTML = /*HTML*/ `
     <div class="header-container">
         <h1>Skriv inn i feltet</h1>
         <h1>du vil oversette fra</h1>
@@ -93,7 +95,7 @@ function loadDemo() {
             </div>
         `;}
     });    
-    document.getElementById("app").innerHTML = /*HTML*/ `
+    $('app').innerHTML = /*HTML*/ `
     <div class="header-container">
         <h1>Hvert tegn har en tilsvarende desimalverdi mellom 0 og 255,</h1>
         <h1>tegnets binære og heksadesimale verdi regnes ut fra dette desimaltallet</h1>
@@ -108,23 +110,68 @@ function loadDemo() {
     `;
 }
 
-function loadDecoder() {
-    document.getElementById("app").innerHTML = /*HTML*/ `
+function loadEncrypter(code){
+    let buttonHtml = ''
+    let encryptHtml = '';
+    let outputHtml = '';
+    if(code === 'encode'){
+        buttonHtml = /*HTML*/ `
+        <button type='button' onclick="keyGeneration()">Generer tilfeldig nøkkel</button>
+        `;
+        outputHtml = `Her kommer den krypterte teksten,<br>
+                        ta vare på både den og nøkkelen`
+        encryptHtml = 'Krypter'
+    }
+    else if (code === 'decode'){
+        outputHtml = 'Her kommer den dekrypterte teksten'
+        encryptHtml = 'Dekrypter'
+    }
+    $('app').innerHTML = /*HTML*/ `
     <div class="header-container">
         <h1>Tekstkryptering</h1>
     </div>
-    <div class="input-container">
-        <div class="input-wrapper">
-            <h3>Skiv teksten du vil kryptere:</h3>
-            <textarea onchange="updateEncoder(this.id, value)" id="encodeInput" placeholder="Skriv her" value=""></textarea>
-        </div>
-        <div class="input-wrapper">
-            <h3>Skiv teksten du vil dekryptere:</h3>
-            <textarea onchange="updateEncoder(this.id, value)" id="decodeInput" placeholder="Skriv her" value=""></textarea>
-        </div>
+    <div class='input-container'>
+        <form id='encryptForm' class='form-container'>
+            <form class='cryptKeyForm'>
+                <div class='input-wrapper'>
+                    <h3>Nøkkel:</h3>
+                    <input type='text' id='${code}Key' value="">
+                </div>
+                ${buttonHtml}
+            </form>
+            <div class='input-wrapper'>
+                <h3>Skiv teksten du vil ${encryptHtml.toLowerCase()}e:</h3>
+                <textarea id='${code}Input' placeholder='Skriv her' value=""></textarea>
+            </div>
+            <div class='input-wrapper'>
+                <h3>${outputHtml}</h3>
+                <textarea id='${code}Output' value="" readonly></textarea>
+            </div>
+            <button class='boldL' type='button' onclick="processCryptForm('${code}')">${encryptHtml}</button>
+        </form>
     </div>
     `;
 }
+
+
+
+// function loadDecoder() {
+//     $('app').innerHTML = /*HTML*/ `
+//     <div class="header-container">
+//         <h1>Tekstkryptering</h1>
+//     </div>
+//     <div class="input-container">
+//         <div class="input-wrapper">
+//             <h3>Skiv teksten du vil kryptere:</h3>
+//             <textarea onchange="updateEncoder(this.id, value)" id="encodeInput" placeholder="Skriv her" value=""></textarea>
+//         </div>
+//         <div class="input-wrapper">
+//             <h3>Skiv teksten du vil dekryptere:</h3>
+//             <textarea onchange="updateEncoder(this.id, value)" id="decodeInput" placeholder="Skriv her" value=""></textarea>
+//         </div>
+//     </div>
+//     `;
+// }
 
 function loadView() {
     loadMain();
@@ -139,8 +186,11 @@ function updatePage(page) {
         case "demo":
             loadDemo();
             break;
-        case "decoder":
-            loadDecoder();
+        case "encode":
+            loadEncrypter(page);
+            break;
+        case "decode":
+            loadEncrypter(page);
             break;
         default:
             loadMain();

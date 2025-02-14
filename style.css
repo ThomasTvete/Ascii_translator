@@ -113,6 +113,21 @@ textarea:focus {
     font-size: 2em;
 }
 
+button {
+    width: auto;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background-color:aliceblue;
+    color:#1e1e2e;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color:darkgray;
+}
+
 #navbar {
     background-color: #1e1e2e;
     color: #cba6f7;

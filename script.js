@@ -79,6 +79,8 @@ function inputValidation(input){
             input.value = input.value.replace(/[^0-9a-fA-F\s]/g, '');
             break;
         default:
+            // brukes ikke egentlig lenger
+            input.value = input.value.replace(/[|]/g, '');
             break;
     }
     
@@ -116,70 +118,113 @@ function showDemo(input) {
     document.getElementById('decDemo').innerHTML =`<h3>${dec}</h3>`
     }
 
-function encodeText(text){
+function encodeText(text, seed){
     // finnes noe ala random.seed i javascript??
-    let seed = 'yoo'
+    // let seed = 'yoo'
     let rng = new Math.seedrandom(seed); // yep okay kanskje dette funker
     let encodedText = [];
-    let shiftInfo = [];
+    // let shiftInfo = []; unødvendig med markør
+    let shiftMarker = randomMarker(rng)
+    console.log('kryptering')
+    console.log('marker ' + shiftMarker);
+    console.log('markerChar ' + decConvert(shiftMarker))
+    console.log('seed ' + seed)
+    console.log('tekst ' + text)
 
-    for (let i = 0; i < text.length; i++){
+    for (const char of text){ // det er for-OF ikke for-IN for arrays din idiot
         let mask = randomAscii(rng); 
-        let charDec = parseInt(singleValueConvert('ascii_char_dic', text[i], 'dec'));
+        console.log('mask ' + mask)
+        console.log('char ' + char)
+        let charDec = parseInt(singleValueConvert('ascii_char_dic', char, 'dec'));
+        console.log('charDec ' + charDec)
         let codeCharVal = charDec ^ mask; // ^ er innebygd bitmasking??
 
         // flytter krypterte tegn over til en ikke-kontroll-kode ascii-verdi
         // etter å ha lagret posisjonen i stringen og hvor mye den flyttes med
-        if((codeCharVal < 32) || (codeCharVal >= 127 && codeCharVal <= 159)){
+        if(validAscii(codeCharVal) || codeCharVal == shiftMarker){
             let shift = randomShiftAscii(rng);
-            shiftInfo.push(i);
+            // shiftInfo.push(i); unødvendig med markør
+            // legg til markør før den skiftede verdien
+            encodedText.push(decConvert(shiftMarker));
+            console.log('SKIFT')
             codeCharVal += shift; 
         }
+        console.log('masket ' + codeCharVal)
         // ascii-disctionary json-fila har alle tall som strings,
         // og paddes med 0 til de har en gitt antall siffer,
         // viktig å huske ved conversions
-        encodedText.push(singleValueConvert('ascii_dec_dic', codeCharVal.toString().padStart(3, '0'), 'char'));
+        encodedText.push(decConvert(codeCharVal));
     }
 
-    let shiftInfoString = shiftInfo.join(',');
 
     // slår de sammen til en string output, må starte med masken og shiftInfo slik at
     // ||| funker som avgrenser selv om encodedText tilfeldigvis også har tre | på rad
-    let encodedOutput = seed + '|' + shiftInfoString + '|' + encodedText.join('');
+    // let encodedOutput = mask + '|' + shiftInfoString + '|' + encodedText.join('');
+
+    let encodedOutput = encodedText.join('');
     console.log(encodedOutput)
 
     return encodedOutput;
 }
 
-function decodeText(text){
-    // leter etter de to første instansene av |||
-    let [seed, shiftInfoStr, encodedText] = text.split('|');
-    console.log('balla')
-    let rng = new Math.seedrandom(seed);
-    
-    console.log(seed)
-    console.log(shiftInfoStr)
-    console.log(encodedText)
+function validAscii(dec){
+    return (dec < 32) || (dec >= 127 && dec <= 159)
+}
 
-    let shiftInfo = shiftInfoStr.split(',').map(i => parseInt(i))
+function randomMarker(rng){
+    let marker;
+    do{
+        marker = randomAscii(rng)
+    } while(validAscii(marker))
+    return marker;
+}
+
+function decConvert(dec){
+    return singleValueConvert('ascii_dec_dic', dec.toString().padStart(3, '0'), 'char')
+}
+
+function decodeText(encodedText, seed){
+    // leter etter de to første instansene av |||
+    // let [shiftInfoStr, encodedText] = text.split('|');
+    console.log('dekryptering')
+    let rng = new Math.seedrandom(seed);
+    let shiftMarker = randomMarker(rng)
+    console.log('marker ' + shiftMarker)
+    console.log('markerChar ' + decConvert(shiftMarker))
+    console.log('seed ' + seed)
+    console.log('tekst ' + encodedText)
+
+    // let shiftInfo = shiftInfoStr.split(',').map(i => parseInt(i))
+    let shiftNext = false;
 
     let decodedText = [];
 
-    for (let i = 0; i < encodedText.length; i++){
+    for (const char of encodedText){
+
+        // HUSK parseInt pga typeequality-tull
+        let codeCharVal = parseInt(singleValueConvert('ascii_char_dic', char, 'dec'));
+
+        if(codeCharVal === shiftMarker){
+            shiftNext = true;
+            continue;
+        }
+        // mask MÅ genereres ETTER shiftMarker-sjekk,
+        // for å opprettholde seed
         let mask = randomAscii(rng);
-        console.log('fuck' + encodedText[i])
-        let codeCharVal = singleValueConvert('ascii_char_dic', encodedText[i], 'dec');
-        console.log('yo' + codeCharVal)
-        if(shiftInfo.includes(i)) {
+        console.log('mask ' + mask)
+        console.log('char ' + char)
+        console.log('charDec ' + codeCharVal)
+        if(shiftNext) {
             let shiftValue = randomShiftAscii(rng);
             codeCharVal = (codeCharVal - shiftValue);
+            shiftNext = false;
         }
-        console.log('wassup' + codeCharVal)
+        console.log('skiftet ' + codeCharVal)
         // revers bitmask returnerer original verdi (håper jeg)
         let charDec = codeCharVal ^ mask; 
-        console.log(charDec)
-        let convert = singleValueConvert('ascii_dec_dic', charDec.toString().padStart(3, '0'), 'char');
-        console.log(convert)
+        console.log('umasket ' + charDec)
+        let convert = decConvert(charDec);
+        console.log('konvert ' + convert)
         decodedText.push(convert)
     }
     console.log(decodedText)
@@ -189,8 +234,6 @@ function decodeText(text){
 
 }
 
-// 91||||||3:77:{9:77:{747
-
 function randomAscii(rng){
     return Math.floor(rng() * (256 - 1)) + 1;
 }
@@ -198,16 +241,38 @@ function randomShiftAscii(rng){
     return Math.floor(rng() * (96 - 32)) + 32;
 }
 
-function updateEncoder(id, string){
-    console.log(id)
-    switch(id){
-        case 'encodeInput':
-            document.getElementById('decodeInput').value = encodeText(string);
-            break;
-        case 'decodeInput':
-            console.log('halla')
-            document.getElementById('encodeInput').value = decodeText(string);
-            break;
-    }
+function processCryptForm(code){
+    const key = $(`${code}Key`).value;
+    const text = $(`${code}Input`).value;
+    const output = window[`${code}Text`](text, key);
+
+    $(`${code}Output`).value = output;
 }
+
+function keyGeneration(){
+    let keyLength = Math.floor(Math.random() * (17 - 8)) + 8;
+    let key = [];
+
+    while(key.length < keyLength){
+        let ranDec = 0;
+        do{
+            ranDec = randomAscii(Math.random);
+        }while(validAscii(ranDec));
+        key.push(singleValueConvert('ascii_dec_dic', ranDec.toString().padStart(3, '0'), 'char'))
+    }
+    $('encodeKey').value = key.join('');
+}
+
+// function updateEncoder(id, string){
+//     console.log(id)
+//     switch(id){
+//         case 'encodeInput':
+//             $('decodeInput').value = encodeText(string);
+//             break;
+//         case 'decodeInput':
+//             console.log('halla')
+//             $('encodeInput').value = decodeText(string);
+//             break;
+//     }
+// }
 
