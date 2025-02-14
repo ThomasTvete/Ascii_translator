@@ -147,7 +147,7 @@ function encodeText(text, seed){
             // legg til markør før den skiftede verdien
             encodedText.push(decConvert(shiftMarker));
             console.log('SKIFT ' + shift)
-            codeCharVal += shift; 
+            codeCharVal += shift; // mulig denne blir lik shiftMarker, men det deales med i decodeText
         }
         console.log('masket ' + codeCharVal)
         // ascii-disctionary json-fila har alle tall som strings,
@@ -208,7 +208,9 @@ function decodeText(encodedText, seed){
         // HUSK parseInt pga typeequality-tull
         let codeCharVal = parseInt(singleValueConvert('ascii_char_dic', char, 'dec'));
 
-        if(codeCharVal === shiftMarker){
+        if(codeCharVal === shiftMarker && shiftNext === false){
+            // om den treffer en shiftMarker hopper den over den,
+            // MED MINDRE forrige også var en shiftMarker
             shiftNext = true;
             continue;
         }
