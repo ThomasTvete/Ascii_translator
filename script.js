@@ -173,14 +173,13 @@ function nonValidAscii(dec){
 }
 
 function randomMarker(rng){
-    // marker kan ikke være over 126,
-    // i tilfelle et maskert tegn overlapper
-    // med en marker på 200+ så vil randomShift
-    // fucke opp alt
+    // marker kan bare være visse tall,
+    // slik at random shift ikke fucker opp alt
+    // ved overlapping
     let marker;
     do{
         marker = randomAscii(rng)
-    } while((marker < 32) || (marker > 126))
+    } while((marker < 32) || (marker >= 63 && marker <= 159) || (marker >= 192))
     return marker;
 }
 
@@ -243,7 +242,8 @@ function randomAscii(rng){
     return Math.floor(rng() * (256 - 1)) + 1;
 }
 function randomShiftAscii(rng){
-    return Math.floor(rng() * (96 - 32)) + 32;
+    // må tilpasses randomMarker også
+    return Math.floor(rng() * (65 - 32)) + 32;
 }
 
 function processCryptForm(code){
